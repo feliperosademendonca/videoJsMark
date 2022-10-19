@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+   <title>Video.js Markers Example</title>
+
+   <style>
+      p {
+         background-color: #eee;
+         border: thin solid #777;
+         padding: 10px;
+      }
+      .video-js{
+         float:left;
+      }
+      .event-list {
+         float:left;
+         border: black;
+         margin-left: 5px;
+         width: 200px;
+
+      }
+      .control{
+         clear: both;
+      }
+   </style>
+   <link href="http://vjs.zencdn.net/4.3/video-js.css" rel="stylesheet">
+   <link href="src/dist/videojs.markers.css" rel="stylesheet">
+   <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<div id="popUp">
+    <div>
+        <p>
+            Apareci quando o video chegou nos 20segundos de execução!
+        </p> 
+    </div>
+    </div>
+        
+    <div id="conteiner" class="">
+        
+        
+        <p>Vai aparecer um POPUP com 20 Segundos</p>
+        
+        
+        <div>
+            <video id="test_video" controls preload="none" class="video-js vjs-default-skin" width="640" height="264">
+                <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+                <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm">
+            </video>
+        </div>
+        
+    </div>
+</body>
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="http://vjs.zencdn.net/4.3/video.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-markers/0.5.0/videojs-markers.js"></script>
+
+<script>
+   // initialize video.js
+   var player = videojs('test_video');
+
+   //Ler a mark do plugin
+   player.markers({
+      markerTip:{
+         display: false,
+         text: function(marker) {
+            return "Esta é uma quebra de marcação: " + marker.text;
+         }
+      },
+
+
+/*Exibe as marcações em overlayer no video*/
+    breakOverlay:{
+         display: true,
+         displayTime: 5,/*tempo de exibição do overlayer*/
+         text: function(marker) {
+            $('#popUp').css('display', 'block')
+
+            return marker.text;
+         }
+      },
+
+    //Escreve na tela o que está acontecendo  quando o player chega nas marcas
+      onMarkerReached: function(marker) {
+         $('.event-list').append("<div>marker reached: " + marker.text + "</div>");
+         $('#popUp').css('display', 'block')
+ 
+      },
+
+
+    //Escreve na tela o que está acontecendo quando clica nos comandos
+    onMarkerClick: function(marker){
+         $('.event-list').append("<div>marker clicked: " + marker.text + "</div>");
+
+      },
+
+      /*As marcações é um array de objetos*/
+      markers: [
+         {
+            time: 20, /* Quando no video vai aparecer*/
+            text: "Exibir PopUP", /* Qual mensagem vai aparecer no overlayer do top do video*/
+            duration: 4,/* Duração da exibição da exibição*/
+         },
+
+         /* você pod eadcionar outras markações com o mesmo formato da anterior*/
+         
+         {
+            time: 8, /* Quando no video vai aparecer*/
+            text: "uma marcação na time line", /* Qual mensagem vai aparecer no overlayer do top do video*/
+            duration: 4,/* Duração da exibição da exibição*/
+         },
+
+         {
+            time: 14, /* Quando no video vai aparecer*/
+            text: "Outro marcação!", /* Qual mensagem vai aparecer no overlayer do top do video*/
+            duration: 4,/* Duração da exibição da exibição*/
+         },
+          
+      ]
+   });
+
+
+   //Controles com jquery
+   $(".next").click(function(){
+      player.markers.next();
+   });
+   $(".prev").click(function(){
+      player.markers.prev();
+   });
+   $(".remove").click(function(){
+      player.markers.remove([0,1]);
+   })
+   $(".add").click(function(){
+      player.markers.add([{
+            time: 25,
+            text: "I'm NEW"
+         }]);
+   });
+
+
+   $(".updateTime").click(function(){
+      var markers = player.markers.getMarkers();
+      for (var i = 0; i < markers.length; i++) {
+         markers[i].time += 1;
+      }
+      player.markers.updateTime();
+   });
+
+   $(".reset").click(function(){
+      player.markers.reset([{
+            time: 40,
+            text: "I'm NEW"
+         },
+         {
+            time:20,
+            text: "Brand new"
+         }]);
+   });
+   $(".destroy").click(function(){
+      player.markers.destroy();
+   })
+</script>
+</html>
